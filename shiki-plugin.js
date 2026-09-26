@@ -9,20 +9,37 @@
     function ready() {
         Lampa.Component.add('shikimori_page', ShikimoriComponent); 
 
+        var menu_item = {
+            id: 'shikimori_plugin',
+            title: 'Shikimori',
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+            onSelect: function () {
+                Lampa.Activity.push({
+                    plugin: 'shikimori_plugin',
+                    component: 'shikimori_page',
+                    title: 'Shikimori Каталог'
+                });
+            }
+        };
+
         if (!window.shikimori_menu_added) {
-            Lampa.Menu.add({
-                id: 'shikimori_plugin',
-                title: 'Shikimori',
-                icon: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>',
-                onSelect: function () {
-                    Lampa.Activity.push({
-                        plugin: 'shikimori_plugin',
-                        component: 'shikimori_page',
-                        title: 'Shikimori Каталог'
-                    });
-                }
-            });
+            // Регистрируем кнопку в реестре Lampa
+            Lampa.Menu.add(menu_item);
             window.shikimori_menu_added = true;
+
+            // Принудительно вставляем кнопку в DOM, если меню уже открыто на экране
+            setTimeout(function() {
+                var menu_body = $('.menu .scroll__content, .menu__list');
+                if (menu_body.length && !menu_body.find('[data-action="shikimori_plugin"]').length) {
+                    var item_html = $('<li class="menu__item selector" data-action="shikimori_plugin">' +
+                        '<div class="menu__ico">' + menu_item.icon + '</div>' +
+                        '<div class="menu__text">' + menu_item.title + '</div>' +
+                        '</li>');
+                    
+                    item_html.on('hover:enter', menu_item.onSelect);
+                    menu_body.append(item_html);
+                }
+            }, 500);
         }
     }
 
